@@ -36,4 +36,7 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/io/micrometer/micrometer-commons/1.14.0/micrometer-commons-1.14.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-webmvc/6.2.0/spring-webmvc-6.2.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-web/6.2.0/spring-web-6.2.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/commons/commons-fileupload2-jakarta-servlet6/2.0.0-M2/commons-fileupload2-jakarta-servlet6-2.0.0-M2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-io/commons-io/2.15.1/commons-io-2.15.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/commons/commons-fileupload2-core/2.0.0-M2/commons-fileupload2-core-2.0.0-M2.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>
