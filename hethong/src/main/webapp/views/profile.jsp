@@ -27,7 +27,6 @@
 			<!-- Hiển thị Avatar -->
 			<div class="text-center mb-3">
 				<c:choose>
-					<%-- Nếu user đã có avatar --%>
 					<c:when test="${not empty sessionScope.account.avatar}">
 						<img
 							src="${pageContext.request.contextPath}/image?fname=${sessionScope.account.avatar}"
@@ -35,7 +34,6 @@
 							style="width: 120px; height: 120px; object-fit: cover;"
 							alt="Avatar">
 					</c:when>
-					<%-- Nếu chưa có avatar -> Hiển thị ảnh mặc định --%>
 					<c:otherwise>
 						<img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
 							class="rounded-circle border"
@@ -57,20 +55,25 @@
 			</div>
 
 			<div class="mb-3">
-				<label class="form-label">Họ và tên (Full Name)</label> <input
-					type="text" name="fullName" class="form-control"
-					value="${sessionScope.account.fullName}" required>
+				<label class="form-label">Họ và tên (Full Name) <span
+					class="text-danger">*</span></label> <input type="text" name="fullName"
+					class="form-control" value="${sessionScope.account.fullName}"
+					required placeholder="Nhập họ và tên đầy đủ">
 			</div>
 
 			<div class="mb-3">
-				<label class="form-label">Số điện thoại (Phone)</label> <input
-					type="text" name="phone" class="form-control"
-					value="${sessionScope.account.phone}">
+				<label class="form-label">Số điện thoại (Phone) <span
+					class="text-danger">*</span></label> <input type="tel" name="phone"
+					class="form-control" value="${sessionScope.account.phone}" required
+					pattern="0[0-9]{9}"
+					title="Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0"
+					placeholder="VD: 0934385567">
 			</div>
 
 			<div class="mb-3">
 				<label class="form-label">Đổi ảnh đại diện (Avatar)</label> <input
-					type="file" name="image" class="form-control" accept="image/*">
+					type="file" name="image" class="form-control"
+					accept="image/png, image/jpeg, image/gif">
 			</div>
 
 			<div class="d-grid gap-2">

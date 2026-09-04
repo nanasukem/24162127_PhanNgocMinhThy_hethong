@@ -106,12 +106,17 @@ h1 {
 
 		<p class="sub-text">Hệ thống quản lý doanh nghiệp</p>
 
-		<!-- ĐÃ ĐĂNG NHẬP: Hiện nút Chỉnh sửa thông tin cá nhân -->
+		<!-- ĐÃ ĐĂNG NHẬP: Hiện nút Profile & Nút Đăng xuất -->
 		<c:if test="${not empty sessionScope.account}">
-			<a href="${pageContext.request.contextPath}/profile"
-				class="custom-btn"> <i class="fa-solid fa-user-pen"></i> Chỉnh
-				sửa thông tin cá nhân
-			</a>
+			<div class="d-flex flex-column gap-2">
+				<a href="${pageContext.request.contextPath}/profile"
+					class="custom-btn"> <i class="fa-solid fa-user-pen"></i> Chỉnh
+					sửa thông tin cá nhân
+				</a> <a href="${pageContext.request.contextPath}/logout"
+					class="btn btn-outline-danger rounded-pill py-2 fw-semibold"> <i
+					class="fa-solid fa-right-from-bracket me-1"></i> Đăng xuất
+				</a>
+			</div>
 		</c:if>
 
 		<!-- CHƯA ĐĂNG NHẬP: Hiện nút Đăng nhập -->
