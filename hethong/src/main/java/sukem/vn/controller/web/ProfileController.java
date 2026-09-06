@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-
+import sukem.vn.constant.Constant;
 import sukem.vn.model.User;
 import sukem.vn.service.UserService;
 import sukem.vn.service.impl.UserServiceImpl;
@@ -54,14 +54,12 @@ public class ProfileController extends HttpServlet {
 		String phone = req.getParameter("phone");
 
 		// --- SERVER-SIDE VALIDATION ---
-		// 1. Kiểm tra Họ và Tên không được để trống
 		if (fullname == null || fullname.trim().isEmpty()) {
 			req.setAttribute("alert", "Họ và tên không được để trống!");
 			req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
 			return;
 		}
 
-		// 2. Kiểm tra Số điện thoại (Bắt buộc đúng 10 số, bắt đầu bằng 0)
 		if (phone == null || !phone.trim().matches("^0\\d{9}$")) {
 			req.setAttribute("alert", "Số điện thoại không hợp lệ! Vui lòng nhập đúng 10 chữ số (VD: 0934385567).");
 			req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
@@ -71,34 +69,33 @@ public class ProfileController extends HttpServlet {
 		user.setFullName(fullname.trim());
 		user.setPhone(phone.trim());
 
-		// --- XỬ LÝ UPLOAD ÁNH AVATAR ---
+		// --- XỬ LÝ UPLOAD ẢNH AVATAR ---
 		try {
 			Part part = req.getPart("image");
 			if (part != null && part.getSize() > 0) {
 				String filename = Paths.get(part.getSubmittedFileName()).getFileName().toString();
 
-				// Validation định dạng file phía Server
+				// Validation định dạng file
 				String lowerName = filename.toLowerCase();
 				if (!lowerName.endsWith(".jpg") && !lowerName.endsWith(".jpeg") && !lowerName.endsWith(".png")
-						&& !lowerName.endsWith(".gif")) {
-					req.setAttribute("alert", "Chỉ chấp nhận file ảnh dạng JPG, PNG, GIF!");
+						&& !lowerName.endsWith(".gif") && !lowerName.endsWith(".webp")) {
+					req.setAttribute("alert", "Chỉ chấp nhận file ảnh dạng JPG, PNG, GIF, WEBP!");
 					req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
 					return;
 				}
 
-				// Đổi tên file theo time millis để không trùng
+				// Đổi tên file theo timestamp
 				String ext = filename.substring(filename.lastIndexOf("."));
 				String avatarFileName = System.currentTimeMillis() + ext;
 
-				// Đường dẫn lưu file
-				String uploadPath = getServletContext().getRealPath("/uploads");
-				File uploadDir = new File(uploadPath);
+				// LƯU CỐ ĐỊNH TẠI Constant.UPLOAD_DIRECTORY (Ví dụ: C:/upload)
+				File uploadDir = new File(Constant.UPLOAD_DIR);
 				if (!uploadDir.exists()) {
 					uploadDir.mkdirs();
 				}
 
-				// Lưu file vật lý
-				part.write(uploadPath + File.separator + avatarFileName);
+				// Ghi file vật lý vào thư mục dùng chung với ImageController
+				part.write(Constant.UPLOAD_DIR + File.separator + avatarFileName);
 
 				// Gán tên file vào User
 				user.setAvatar(avatarFileName);
@@ -107,11 +104,12 @@ public class ProfileController extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		// Cập nhật vào CSDL qua JPA
+		// Cập nhật CSDL
 		UserService service = new UserServiceImpl();
 		boolean isSuccess = service.update(user);
 
 		if (isSuccess) {
+			// Cập nhật lại session ngay lập tức
 			session.setAttribute("account", user);
 			req.setAttribute("message", "Cập nhật thông tin thành công!");
 		} else {

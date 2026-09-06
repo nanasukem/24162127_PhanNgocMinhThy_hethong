@@ -1,8 +1,10 @@
 package sukem.vn.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,66 +14,47 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import sukem.vn.model.Product;
 
 @Entity
-
-@AllArgsConstructor
-
-@NoArgsConstructor
-
-@Data
-
 @Table(name = "categories")
-
 @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c")
-
 public class Category implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-
-	@Column(name = "categoryId")
-
+	@Column(name = "id")
 	private int categoryid;
 
-	@Column(name = "categoryname", columnDefinition = "NVARCHAR(50) not null")
-
+	@Column(name = "name", columnDefinition = "NVARCHAR(50) NOT NULL")
 	@NotEmpty(message = "Không được phép rỗng")
-
 	private String categoryname;
 
-	@Column(name = "images", columnDefinition = "Nvarchar(500) null")
-
+	@Column(name = "images", columnDefinition = "NVARCHAR(500) NULL")
 	private String images;
 
 	@Column(name = "status")
 	private int status;
 
-	// bi-directional many-to-one association to Video
+	@OneToMany(mappedBy = "category")
+	private List<Video> videos = new ArrayList<>();
 
-	@OneToMany(mappedBy = "categories")
-
-	private List<Video> videos;
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Product> products = new ArrayList<>();
 
 	public Category() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Category(int categoryid, @NotEmpty(message = "Không được phép rỗng") String categoryname, String images,
-			int status, List<Video> videos) {
+			int status) {
 		super();
 		this.categoryid = categoryid;
 		this.categoryname = categoryname;
 		this.images = images;
 		this.status = status;
-		this.videos = videos;
 	}
 
 	public int getCategoryid() {
@@ -114,30 +97,51 @@ public class Category implements Serializable {
 		this.videos = videos;
 	}
 
-	@Override
-	public String toString() {
-		return "Category [categoryid=" + categoryid + ", categoryname=" + categoryname + ", images=" + images
-				+ ", status=" + status + ", videos=" + videos + "]";
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 
 	public Video addVideo(Video video) {
-
-		getVideos().add(video);
-
+		if (this.videos == null) {
+			this.videos = new ArrayList<>();
+		}
+		this.videos.add(video);
 		video.setCategory(this);
-
 		return video;
-
 	}
 
 	public Video removeVideo(Video video) {
-
-		getVideos().remove(video);
-
-		video.setCategory(null);
-
+		if (this.videos != null) {
+			this.videos.remove(video);
+			video.setCategory(null);
+		}
 		return video;
-
 	}
 
+	public Product addProduct(Product product) {
+		if (this.products == null) {
+			this.products = new ArrayList<>();
+		}
+		this.products.add(product);
+		product.setCategory(this);
+		return product;
+	}
+
+	public Product removeProduct(Product product) {
+		if (this.products != null) {
+			this.products.remove(product);
+			product.setCategory(null);
+		}
+		return product;
+	}
+
+	@Override
+	public String toString() {
+		return "Category [categoryid=" + categoryid + ", categoryname=" + categoryname + ", images=" + images
+				+ ", status=" + status + "]";
+	}
 }

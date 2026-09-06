@@ -7,7 +7,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
 import sukem.vn.dao.UserDao;
-import sukem.vn.model.User; // Đảm bảo lớp User này có khai báo @Entity
+import sukem.vn.model.User;
 import sukem.vn.repository.JpaConfig;
 
 public class UserDaoImpl implements UserDao {
@@ -19,6 +19,26 @@ public class UserDaoImpl implements UserDao {
 			String jpql = "SELECT u FROM User u WHERE u.userName = :username";
 			TypedQuery<User> query = enma.createQuery(jpql, User.class);
 			query.setParameter("username", username);
+
+			List<User> list = query.getResultList();
+			if (!list.isEmpty()) {
+				return list.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			enma.close();
+		}
+		return null;
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		EntityManager enma = JpaConfig.getEntityManager();
+		try {
+			String jpql = "SELECT u FROM User u WHERE u.email = :email";
+			TypedQuery<User> query = enma.createQuery(jpql, User.class);
+			query.setParameter("email", email);
 
 			List<User> list = query.getResultList();
 			if (!list.isEmpty()) {
@@ -56,7 +76,6 @@ public class UserDaoImpl implements UserDao {
 		EntityTransaction trans = enma.getTransaction();
 		try {
 			trans.begin();
-			// JPA merge() sẽ tự động cập nhật dữ liệu xuống SQL Server
 			enma.merge(user);
 			trans.commit();
 			return true;

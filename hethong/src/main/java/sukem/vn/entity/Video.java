@@ -9,63 +9,39 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
-
-@AllArgsConstructor
-
-@Data
 
 @Entity
-
 @Table(name = "Videos")
-
 @NamedQuery(name = "Video.findAll", query = "SELECT v FROM Video v")
-
 public class Video implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-
 	@Column(name = "videoId")
-
 	private String videoId;
 
 	@Column(name = "active")
-
 	private boolean active;
 
-	@Column(name = "description", columnDefinition = "Nvarchar(500) null")
-
+	@Column(name = "description", columnDefinition = "NVARCHAR(500) NULL")
 	private String description;
 
-	@Column(name = "poster", columnDefinition = "Nvarchar(500) null")
-
+	@Column(name = "poster", columnDefinition = "NVARCHAR(500) NULL")
 	private String poster;
 
-	@Column(name = "title", columnDefinition = "Nvarchar(500) null")
-
+	@Column(name = "title", columnDefinition = "NVARCHAR(500) NULL")
 	private String title;
 
 	@Column(name = "views")
-
 	private int views;
 
-	// bi-directional many-to-one association to Category
-
 	@ManyToOne
-
-	@JoinColumn(name = "categoryId")
-
-	private Category categories;
+	@JoinColumn(name = "category_id") // Sửa thành category_id
+	private Category category;
 
 	public Video() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getVideoId() {
@@ -116,21 +92,16 @@ public class Video implements Serializable {
 		this.views = views;
 	}
 
-	public Category getCategories() {
-		return categories;
+	public Category getCategory() {
+		return category;
 	}
-	
+
 	public void setCategory(Category category) {
-	    this.categories = category;
-	}
-	public void setCategories(Category categories) {
-		this.categories = categories;
+		this.category = category;
 	}
 
 	@Override
 	public String toString() {
-		return "Video [videoId=" + videoId + ", active=" + active + ", description=" + description + ", poster="
-				+ poster + ", title=" + title + ", views=" + views + ", categories=" + categories + "]";
+		return "Video [videoId=" + videoId + ", active=" + active + ", title=" + title + ", views=" + views + "]";
 	}
-
 }

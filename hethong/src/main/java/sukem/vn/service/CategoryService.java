@@ -1,7 +1,7 @@
 package sukem.vn.service;
 
 import java.util.List;
-import sukem.vn.model.Category;
+import sukem.vn.entity.Category;
 
 public interface CategoryService {
 	void insert(Category category);
@@ -17,4 +17,8 @@ public interface CategoryService {
 	List<Category> getAll();
 
 	List<Category> search(String keyword);
+
+	Category findById(int id);
+
+	List<Category> findAll();
 }

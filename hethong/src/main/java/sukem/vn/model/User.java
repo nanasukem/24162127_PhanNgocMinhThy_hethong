@@ -1,4 +1,4 @@
-package sukem.vn.model; // Hoặc package entity của bạn
+package sukem.vn.model;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "users") // Đổi tên bảng đúng với Database của bạn
+@Table(name = "users")
 public class User implements Serializable {
 
 	@Id
@@ -22,10 +22,16 @@ public class User implements Serializable {
 	private String phone;
 	private Date createdDate;
 
-	public User(int id, String email, String userName, String fullName, String passWord, String avatar, int roleid,
-			String phone, Date createdDate) {
-		super();
-		this.id = id;
+	private boolean status; // false: Chưa kích hoạt, true: Đã kích hoạt
+	private String code; // Mã OTP 6 chữ số
+
+	// 1. Constructor mặc định bắt buộc cho JPA
+	public User() {
+	}
+
+	// 2. Constructor đầy đủ tham số không có ID (dùng khi Insert mới)
+	public User(String email, String userName, String fullName, String passWord, String avatar, int roleid,
+			String phone, Date createdDate, boolean status, String code) {
 		this.email = email;
 		this.userName = userName;
 		this.fullName = fullName;
@@ -34,8 +40,11 @@ public class User implements Serializable {
 		this.roleid = roleid;
 		this.phone = phone;
 		this.createdDate = createdDate;
+		this.status = status;
+		this.code = code;
 	}
 
+	// 3. Constructor 8 tham số cũ (để tương thích nếu code cũ của bạn có gọi)
 	public User(String email, String userName, String fullName, String passWord, String avatar, int roleid,
 			String phone, Date createdDate) {
 		this.email = email;
@@ -46,11 +55,26 @@ public class User implements Serializable {
 		this.roleid = roleid;
 		this.phone = phone;
 		this.createdDate = createdDate;
+		this.status = false;
 	}
 
-	public User() {
+	// 4. Constructor đầy đủ tất cả thuộc tính gồm cả ID
+	public User(int id, String email, String userName, String fullName, String passWord, String avatar, int roleid,
+			String phone, Date createdDate, boolean status, String code) {
+		this.id = id;
+		this.email = email;
+		this.userName = userName;
+		this.fullName = fullName;
+		this.passWord = passWord;
+		this.avatar = avatar;
+		this.roleid = roleid;
+		this.phone = phone;
+		this.createdDate = createdDate;
+		this.status = status;
+		this.code = code;
 	}
 
+	// Getter & Setter
 	public int getId() {
 		return id;
 	}
@@ -123,10 +147,26 @@ public class User implements Serializable {
 		this.createdDate = createdDate;
 	}
 
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", email=" + email + ", userName=" + userName + ", fullName=" + fullName
 				+ ", passWord=" + passWord + ", avatar=" + avatar + ", roleid=" + roleid + ", phone=" + phone
-				+ ", createdDate=" + createdDate + "]";
+				+ ", createdDate=" + createdDate + ", status=" + status + ", code=" + code + "]";
 	}
 }

@@ -20,14 +20,23 @@ public class LoginController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// 1. Nếu đã đăng nhập rồi -> chuyển thẳng sang trang Home
+		// 1. Kiểm tra thông báo từ các trang khác chuyển về
+		String alertParam = req.getParameter("alert");
+		if ("active_success".equals(alertParam)) {
+			req.setAttribute("message", "Tài khoản đã được kích hoạt thành công! Vui lòng đăng nhập.");
+		} else if ("reset_success".equals(alertParam)) {
+			req.setAttribute("message", "Đổi mật khẩu thành công! Vui lòng đăng nhập lại với mật khẩu mới.");
+		}
+
+		// 2. Nếu đã đăng nhập rồi -> phân quyền chuyển trang
 		HttpSession session = req.getSession(false);
 		if (session != null && session.getAttribute("account") != null) {
-			resp.sendRedirect(req.getContextPath() + "/home");
+			User currentUser = (User) session.getAttribute("account");
+			redirectByRole(req, resp, currentUser);
 			return;
 		}
 
-		// 2. Kiểm tra Cookie Remember Me
+		// 3. Kiểm tra Cookie Remember Me
 		Cookie[] cookies = req.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
@@ -35,17 +44,18 @@ public class LoginController extends HttpServlet {
 					String username = cookie.getValue();
 					UserService service = new UserServiceImpl();
 					User user = service.get(username);
-					if (user != null) {
+					// Kiểm tra tồn tại và bắt buộc đã kích hoạt status
+					if (user != null && user.isStatus()) {
 						session = req.getSession(true);
 						session.setAttribute("account", user);
-						resp.sendRedirect(req.getContextPath() + "/home");
+						redirectByRole(req, resp, user);
 						return;
 					}
 				}
 			}
 		}
 
-		// 3. Chưa đăng nhập -> Hiện trang login.jsp
+		// 4. Chưa đăng nhập -> Hiện trang login.jsp
 		req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
 	}
 
@@ -69,6 +79,18 @@ public class LoginController extends HttpServlet {
 		User user = service.login(username, password);
 
 		if (user != null) {
+			// KIỂM TRA TRẠNG THÁI KÍCH HOẠT
+			if (!user.isStatus()) {
+				HttpSession session = req.getSession(true);
+				session.setAttribute("verifyEmail", user.getEmail());
+
+				req.setAttribute("notActivated", true);
+				req.setAttribute("alert", "Tài khoản chưa được kích hoạt OTP qua Email!");
+				req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+				return;
+			}
+
+			// Lưu Session khi đã kích hoạt
 			HttpSession session = req.getSession(true);
 			session.setAttribute("account", user);
 
@@ -76,17 +98,32 @@ public class LoginController extends HttpServlet {
 				saveRememberMe(resp, username);
 			}
 
-			// Đăng nhập thành công -> Chuyển hướng sang trang Home
-			resp.sendRedirect(req.getContextPath() + "/home");
+			// ĐĂNG NHẬP THÀNH CÔNG -> Phân quyền Admin và Khách
+			redirectByRole(req, resp, user);
+
 		} else {
 			req.setAttribute("alert", "Tài khoản hoặc mật khẩu không đúng");
 			req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
 		}
 	}
 
+	/**
+	 * Phân quyền điều hướng: Admin vào /admin/products, Khách hàng vào /home
+	 */
+	private void redirectByRole(HttpServletRequest req, HttpServletResponse resp, User user) throws IOException {
+		// Kiểm tra roleid = 1 (hoặc user.getRoleid() == 1 tuỳ hàm getter trong model
+		// User)
+		int roleId = user.getRoleid();
+		if (roleId == 1) {
+			resp.sendRedirect(req.getContextPath() + "/admin/products");
+		} else {
+			resp.sendRedirect(req.getContextPath() + "/home");
+		}
+	}
+
 	private void saveRememberMe(HttpServletResponse response, String username) {
 		Cookie cookie = new Cookie(Constant.COOKIE_REMEMBER, username);
-		cookie.setMaxAge(30 * 60);
+		cookie.setMaxAge(30 * 60); // 30 phút
 		cookie.setPath("/");
 		response.addCookie(cookie);
 	}

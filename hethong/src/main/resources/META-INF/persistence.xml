@@ -6,11 +6,15 @@
 
 	<persistence-unit name="jpa-hibernate-mysql">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+		<!-- Đăng ký đầy đủ các Entity -->
 		<class>sukem.vn.entity.Category</class>
+		<class>sukem.vn.entity.Product</class>
+		<class>sukem.vn.entity.Video</class>
 
 		<properties>
 			<property name="jakarta.persistence.jdbc.url"
-				value="jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=webjpa" />
+				value="jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=webhethong" />
 			<property name="jakarta.persistence.jdbc.driver"
 				value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
 			<property name="jakarta.persistence.jdbc.user" value="sa" />

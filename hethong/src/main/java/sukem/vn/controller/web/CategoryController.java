@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import sukem.vn.model.Category;
+import sukem.vn.entity.Category;
 import sukem.vn.service.CategoryService;
 import sukem.vn.service.impl.CategoryServiceImpl;
 

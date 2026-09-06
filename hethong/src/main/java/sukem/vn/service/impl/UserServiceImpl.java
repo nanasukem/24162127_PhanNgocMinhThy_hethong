@@ -15,6 +15,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User findByEmail(String email) {
+		return userDao.findByEmail(email);
+	}
+
+	@Override
 	public User login(String username, String password) {
 		User user = this.get(username);
 		if (user != null && password.equals(user.getPassWord())) {
@@ -25,12 +30,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean register(String username, String password, String email, String fullname, String phone) {
-		if (userDao.checkExistUsername(username)) {
+		if (userDao.checkExistUsername(username) || userDao.checkExistEmail(email)) {
 			return false;
 		}
 		long millis = System.currentTimeMillis();
 		java.sql.Date date = new java.sql.Date(millis);
-		userDao.insert(new User(email, username, fullname, password, null, 5, phone, date));
+		// Khởi tạo User mới với status mặc định là false (chưa kích hoạt)
+		User user = new User(email, username, fullname, password, null, 5, phone, date);
+		user.setStatus(false);
+		userDao.insert(user);
 		return true;
 	}
 
@@ -56,7 +64,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean update(User user) {
-		// Ủy quyền gọi hàm update xử lý JPA dưới UserDaoImpl
 		return userDao.update(user);
 	}
 }

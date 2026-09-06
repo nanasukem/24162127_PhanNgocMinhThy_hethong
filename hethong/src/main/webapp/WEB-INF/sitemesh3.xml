@@ -4,5 +4,9 @@
 	<mapping path="/*" decorator="web.jsp" />
 
 	<mapping path="/login" exclude="true" />
-	<mapping path="/register" exclude="true" />
+
+	<mapping path="/register" excl="true" />
+	<mapping path="/verify-otp" excl="true" />
+	<mapping path="/forgot-password" excl="true" />
+	<mapping path="/reset-password" excl="true" />
 </sitemesh>

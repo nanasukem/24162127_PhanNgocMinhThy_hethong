@@ -1,220 +1,163 @@
 package sukem.vn.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 import sukem.vn.dao.CategoryDao;
-import sukem.vn.model.Category;
-import sukem.vn.repository.SQLServerConnect;
+import sukem.vn.entity.Category;
+import sukem.vn.repository.JpaConfig;
 
-public class CategoryDaoImpl extends SQLServerConnect implements CategoryDao {
+public class CategoryDaoImpl implements CategoryDao {
 
 	@Override
 	public void insert(Category category) {
-
-		String sql = "INSERT INTO category(cate_name, icons) VALUES (?, ?)";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ps.setString(1, category.getCatename());
-
-			ps.setString(2, category.getIcon());
-
-			ps.executeUpdate();
-
+		EntityManager em = JpaConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+		try {
+			trans.begin();
+			em.persist(category);
+			trans.commit();
 		} catch (Exception e) {
-
+			if (trans.isActive())
+				trans.rollback();
 			e.printStackTrace();
-
+		} finally {
+			em.close();
 		}
-
 	}
 
 	@Override
 	public void edit(Category category) {
+		update(category);
+	}
 
-		String sql = "UPDATE category SET cate_name=?, icons=? WHERE cate_id=?";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ps.setString(1, category.getCatename());
-
-			ps.setString(2, category.getIcon());
-
-			ps.setInt(3, category.getCateid());
-
-			ps.executeUpdate();
-
+	@Override
+	public void update(Category category) {
+		EntityManager em = JpaConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+		try {
+			trans.begin();
+			em.merge(category);
+			trans.commit();
 		} catch (Exception e) {
-
+			if (trans.isActive())
+				trans.rollback();
 			e.printStackTrace();
-
+		} finally {
+			em.close();
 		}
-
 	}
 
 	@Override
 	public void delete(int id) {
-
-		String sql = "DELETE FROM category WHERE cate_id=?";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ps.setInt(1, id);
-
-			ps.executeUpdate();
-
+		EntityManager em = JpaConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+		try {
+			trans.begin();
+			Category category = em.find(Category.class, id);
+			if (category != null) {
+				em.remove(category);
+			}
+			trans.commit();
 		} catch (Exception e) {
-
+			if (trans.isActive())
+				trans.rollback();
 			e.printStackTrace();
-
+		} finally {
+			em.close();
 		}
-
 	}
 
 	@Override
 	public Category get(int id) {
+		return findById(id);
+	}
 
-		String sql = "SELECT * FROM category WHERE cate_id=?";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ps.setInt(1, id);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next()) {
-
-				Category category = new Category();
-
-				category.setCateid(rs.getInt("cate_id"));
-
-				category.setCatename(rs.getString("cate_name"));
-
-				category.setIcon(rs.getString("icons"));
-
-				return category;
-
-			}
-
+	@Override
+	public Category findById(int id) {
+		EntityManager em = JpaConfig.getEntityManager();
+		try {
+			return em.find(Category.class, id);
 		} catch (Exception e) {
-
 			e.printStackTrace();
-
+			return null;
+		} finally {
+			em.close();
 		}
-
-		return null;
-
 	}
 
 	@Override
 	public Category get(String name) {
+		return findByName(name);
+	}
 
-		String sql = "SELECT * FROM category WHERE cate_name=?";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ps.setString(1, name);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next()) {
-
-				Category category = new Category();
-
-				category.setCateid(rs.getInt("cate_id"));
-
-				category.setCatename(rs.getString("cate_name"));
-
-				category.setIcon(rs.getString("icons"));
-
-				return category;
-
-			}
-
+	@Override
+	public Category findByName(String name) {
+		EntityManager em = JpaConfig.getEntityManager();
+		try {
+			String jpql = "SELECT c FROM Category c WHERE c.categoryname = :name";
+			TypedQuery<Category> query = em.createQuery(jpql, Category.class);
+			query.setParameter("name", name);
+			List<Category> list = query.getResultList();
+			return list.isEmpty() ? null : list.get(0);
 		} catch (Exception e) {
-
 			e.printStackTrace();
-
+			return null;
+		} finally {
+			em.close();
 		}
-
-		return null;
-
 	}
 
 	@Override
 	public List<Category> getAll() {
+		return findAll();
+	}
 
-		List<Category> categories = new ArrayList<>();
-
-		String sql = "SELECT * FROM category";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-
-				Category category = new Category();
-
-				category.setCateid(rs.getInt("cate_id"));
-
-				category.setCatename(rs.getString("cate_name"));
-
-				category.setIcon(rs.getString("icons"));
-
-				categories.add(category);
-
-			}
-
+	@Override
+	public List<Category> findAll() {
+		EntityManager em = JpaConfig.getEntityManager();
+		try {
+			// Lấy toàn bộ danh mục từ bảng categories
+			String jpql = "SELECT c FROM Category c";
+			TypedQuery<Category> query = em.createQuery(jpql, Category.class);
+			return query.getResultList();
 		} catch (Exception e) {
-
 			e.printStackTrace();
-
+			return Collections.emptyList();
+		} finally {
+			em.close();
 		}
-
-		return categories;
-
 	}
 
 	@Override
 	public List<Category> search(String keyword) {
-
-		List<Category> categories = new ArrayList<>();
-
-		String sql = "SELECT * FROM category WHERE cate_name LIKE ?";
-
-		try (Connection con = super.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-			ps.setString(1, "%" + keyword + "%");
-
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-
-				Category category = new Category();
-
-				category.setCateid(rs.getInt("cate_id"));
-
-				category.setCatename(rs.getString("cate_name"));
-
-				category.setIcon(rs.getString("icons"));
-
-				categories.add(category);
-
-			}
-
+		EntityManager em = JpaConfig.getEntityManager();
+		try {
+			String jpql = "SELECT c FROM Category c WHERE c.categoryname LIKE :keyword";
+			TypedQuery<Category> query = em.createQuery(jpql, Category.class);
+			query.setParameter("keyword", "%" + keyword + "%");
+			return query.getResultList();
 		} catch (Exception e) {
-
 			e.printStackTrace();
-
+			return Collections.emptyList();
+		} finally {
+			em.close();
 		}
-
-		return categories;
-
 	}
 
+	@Override
+	public int count() {
+		EntityManager em = JpaConfig.getEntityManager();
+		try {
+			String jpql = "SELECT count(c) FROM Category c";
+			return ((Long) em.createQuery(jpql).getSingleResult()).intValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		} finally {
+			em.close();
+		}
+	}
 }
