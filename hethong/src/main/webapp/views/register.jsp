@@ -94,7 +94,7 @@ body {
 	<div class="login-box">
 		<div class="title">Tạo Tài Khoản Mới</div>
 
-		<%-- Thông báo lỗi nếu có --%>
+		<%-- Thông báo lỗi từ Server nếu có --%>
 		<c:if test="${not empty alert}">
 			<div class="alert alert-danger text-center py-2 mb-3"
 				style="font-size: 14px;">
@@ -103,12 +103,13 @@ body {
 		</c:if>
 
 		<form action="${pageContext.request.contextPath}/register"
-			method="post" onsubmit="return checkPassword()">
+			method="post" onsubmit="return validateRegisterForm()">
 
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-				<input type="text" name="username" class="form-control"
-					placeholder="Tài khoản" value="${param.username}" required>
+				<input type="text" name="username" id="username"
+					class="form-control" placeholder="Tài khoản (tối thiểu 4 ký tự)"
+					value="${param.username}" minlength="4" maxlength="50" required>
 			</div>
 
 			<div class="input-group mb-3">
@@ -126,20 +127,23 @@ body {
 
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-				<input type="text" name="phone" class="form-control"
-					placeholder="Số điện thoại" value="${param.phone}" required>
+				<input type="tel" name="phone" class="form-control"
+					placeholder="Số điện thoại (10 chữ số)" pattern="^0[0-9]{9}$"
+					title="Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0"
+					value="${param.phone}" required>
 			</div>
 
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
 				<input type="password" id="password" name="password"
-					class="form-control" placeholder="Mật khẩu" required>
+					class="form-control" placeholder="Mật khẩu (tối thiểu 6 ký tự)"
+					minlength="6" required>
 			</div>
 
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="fa-solid fa-shield"></i></span>
 				<input type="password" id="confirmPassword" class="form-control"
-					placeholder="Nhập lại mật khẩu" required>
+					placeholder="Nhập lại mật khẩu" minlength="6" required>
 			</div>
 
 			<button type="submit" class="btn register-btn">
@@ -160,11 +164,21 @@ body {
 	</div>
 
 	<script>
-		function checkPassword() {
-			let password = document.getElementById("password").value;
-			let confirmPassword = document.getElementById("confirmPassword").value;
-			if (password !== confirmPassword) {
-				alert("Mật khẩu xác nhận không khớp! Vui lòng nhập lại.");
+		function validateRegisterForm() {
+			let u = document.getElementById("username").value.trim();
+			let p = document.getElementById("password").value;
+			let cp = document.getElementById("confirmPassword").value;
+
+			if (u.length < 4) {
+				alert("Tên tài khoản phải có ít nhất 4 ký tự!");
+				return false;
+			}
+			if (p.length < 6) {
+				alert("Mật khẩu phải có ít nhất 6 ký tự!");
+				return false;
+			}
+			if (p !== cp) {
+				alert("Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.");
 				return false;
 			}
 			return true;

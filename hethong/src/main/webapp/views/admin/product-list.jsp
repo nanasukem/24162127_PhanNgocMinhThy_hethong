@@ -122,9 +122,9 @@ body {
 
 	<div class="container-fluid px-4 py-4">
 
-		<!-- DÒNG TRÊN CÙNG: TIÊU ĐỀ + CHỈ CÒN NÚT THÊM MỚI -->
+		<!-- DÒNG TRÊN CÙNG: TIÊU ĐỀ + CÁC NÚT THÊM MỚI -->
 		<div
-			class="d-flex flex-wrap justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
+			class="d-flex flex-wrap justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm gap-3">
 			<div>
 				<h4 class="fw-bold mb-1 text-dark">
 					<i class="fa-solid fa-boxes-stacked text-primary me-2"></i>Quản Lý
@@ -134,11 +134,17 @@ body {
 					thông tin hoặc Xóa</small>
 			</div>
 
-			<div>
-				<!-- NÚT DUY NHẤT: Thêm sản phẩm mới -->
+			<div class="d-flex gap-2">
+				<!-- NÚT 1: Thêm danh mục mới -->
+				<a href="${pageContext.request.contextPath}/admin/category/add"
+					class="btn btn-outline-primary rounded-pill px-3 fw-semibold shadow-sm">
+					<i class="fa-solid fa-folder-plus me-1"></i> Thêm Danh Mục Mới
+				</a>
+
+				<!-- NÚT 2: Thêm sản phẩm mới -->
 				<a href="${pageContext.request.contextPath}/admin/product/add"
 					class="btn btn-success rounded-pill px-3 fw-semibold shadow-sm">
-					<i class="fa-solid fa-circle-plus me-1"></i> Thêm Sản Phẩm Mới
+					<i class="fa-solid fa-circle-plus me-1"></i> Thêm Bánh Mới
 				</a>
 			</div>
 		</div>

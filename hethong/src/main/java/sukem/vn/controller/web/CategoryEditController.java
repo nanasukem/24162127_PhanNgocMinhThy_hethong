@@ -98,7 +98,8 @@ public class CategoryEditController extends HttpServlet {
 				cateService.edit(category);
 			}
 
-			resp.sendRedirect(req.getContextPath() + "/admin/category/list");
+			// Sửa dòng redirect cuối cùng:
+			resp.sendRedirect(req.getContextPath() + "/admin/products");
 
 		} catch (Exception e) {
 			e.printStackTrace();

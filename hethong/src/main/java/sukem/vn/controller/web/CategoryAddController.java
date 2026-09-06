@@ -39,21 +39,27 @@ public class CategoryAddController extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
-		Category category = new Category();
-
 		try {
-			// 1. Lấy tên danh mục
+			// 1. Lấy và kiểm tra tên danh mục (Validation)
 			String cateName = req.getParameter("categoryname");
 			if (cateName == null || cateName.trim().isEmpty()) {
-				cateName = req.getParameter("catename"); // dự phòng form dùng name="catename"
+				cateName = req.getParameter("catename");
 			}
-			category.setCategoryname(cateName);
-			category.setStatus(1); // int status: 1 là hoạt động
+
+			if (cateName == null || cateName.trim().isEmpty()) {
+				req.setAttribute("alert", "Tên danh mục không được để trống!");
+				req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+				return;
+			}
+
+			Category category = new Category();
+			category.setCategoryname(cateName.trim());
+			category.setStatus(1); // 1 là hoạt động
 
 			// 2. Lấy file ảnh upload qua Jakarta Part
 			Part part = req.getPart("images");
 			if (part == null) {
-				part = req.getPart("icon"); // dự phòng form dùng name="icon"
+				part = req.getPart("icon");
 			}
 
 			if (part != null && part.getSize() > 0) {
@@ -63,26 +69,22 @@ public class CategoryAddController extends HttpServlet {
 					int index = originalFileName.lastIndexOf(".");
 					String ext = (index > 0) ? originalFileName.substring(index) : ".png";
 
-					// Tạo tên file mới kèm timestamp để tránh trùng lặp
 					String newFileName = System.currentTimeMillis() + ext;
 
-					// Tạo thư mục C:/upload/category nếu chưa có
 					File uploadFolder = new File(Constant.UPLOAD_DIR + File.separator + "category");
 					if (!uploadFolder.exists()) {
 						uploadFolder.mkdirs();
 					}
 
-					// Lưu file vào đĩa cứng
 					File fileSave = new File(uploadFolder, newFileName);
 					part.write(fileSave.getAbsolutePath());
 
-					// Cập nhật đường dẫn ảnh vào entity
 					category.setImages("category/" + newFileName);
 				}
 			}
 
 			cateService.insert(category);
-			resp.sendRedirect(req.getContextPath() + "/admin/category/list");
+			resp.sendRedirect(req.getContextPath() + "/admin/products");
 
 		} catch (Exception e) {
 			e.printStackTrace();
