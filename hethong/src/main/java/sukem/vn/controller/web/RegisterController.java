@@ -34,7 +34,6 @@ public class RegisterController extends HttpServlet {
 		String phone = req.getParameter("phone");
 		String password = req.getParameter("password");
 
-		// --- SERVER-SIDE VALIDATION ---
 		if (username == null || username.trim().length() < 4) {
 			req.setAttribute("alert", "Tên tài khoản không được để trống và tối thiểu 4 ký tự!");
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
@@ -45,58 +44,50 @@ public class RegisterController extends HttpServlet {
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
 			return;
 		}
-		// Validate Email
 		String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
 		if (email == null || !email.matches(emailRegex)) {
 			req.setAttribute("alert", "Định dạng Email không hợp lệ!");
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
 			return;
 		}
-		// Validate Số điện thoại (10 chữ số bắt đầu bằng 0)
 		if (phone == null || !phone.matches("^0[0-9]{9}$")) {
 			req.setAttribute("alert", "Số điện thoại phải gồm đúng 10 số và bắt đầu bằng số 0!");
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
 			return;
 		}
-		// Validate mật khẩu
 		if (password == null || password.length() < 6) {
 			req.setAttribute("alert", "Mật khẩu phải có độ dài từ 6 ký tự trở lên!");
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
 			return;
 		}
 
-		// 1. Kiểm tra username đã tồn tại chưa
 		if (userService.checkExistUsername(username.trim())) {
 			req.setAttribute("alert", "Tên tài khoản này đã được sử dụng!");
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
 			return;
 		}
 
-		// 2. Kiểm tra email đã tồn tại chưa
 		if (userService.checkExistEmail(email.trim())) {
 			req.setAttribute("alert", "Email này đã được sử dụng!");
 			req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
 			return;
 		}
 
-		// 3. Tạo mã OTP ngẫu nhiên 6 chữ số
 		String otp = EmailService.generateOtp();
 
-		// 4. Tạo đối tượng User với trạng thái chưa kích hoạt (status = false)
 		User user = new User();
 		user.setUserName(username.trim());
 		user.setFullName(fullname.trim());
 		user.setEmail(email.trim());
 		user.setPhone(phone.trim());
 		user.setPassWord(password);
-		user.setRoleid(5); // Quyền người dùng mặc định
+		user.setRoleid(5); 
 		user.setCreatedDate(new Date(System.currentTimeMillis()));
-		user.setStatus(false); // Chưa kích hoạt
+		user.setStatus(false);
 		user.setCode(otp);
 
 		userService.insert(user);
 
-		// 5. Gửi email chứa mã OTP kích hoạt
 		String subject = "Mã xác thực kích hoạt tài khoản";
 		String body = "<h3>Xin chào " + fullname + ",</h3>"
 				+ "<p>Cảm ơn bạn đã đăng ký tài khoản hệ thống. Mã OTP kích hoạt của bạn là:</p>"
@@ -104,10 +95,8 @@ public class RegisterController extends HttpServlet {
 				+ "<p>Vui lòng không chia sẻ mã xác thực này cho người khác.</p>";
 		EmailService.sendEmail(email, subject, body);
 
-		// 6. Lưu email vào Session để trang verify-otp biết cần xác thực user nào
 		req.getSession().setAttribute("verifyEmail", email.trim());
 
-		// 7. Chuyển sang trang nhập OTP
 		resp.sendRedirect(req.getContextPath() + "/verify-otp");
 	}
 }

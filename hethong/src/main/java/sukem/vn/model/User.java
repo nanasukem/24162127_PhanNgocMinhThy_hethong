@@ -22,14 +22,12 @@ public class User implements Serializable {
 	private String phone;
 	private Date createdDate;
 
-	private boolean status; // false: Chưa kích hoạt, true: Đã kích hoạt
-	private String code; // Mã OTP 6 chữ số
+	private boolean status; 
+	private String code; 
 
-	// 1. Constructor mặc định bắt buộc cho JPA
 	public User() {
 	}
 
-	// 2. Constructor đầy đủ tham số không có ID (dùng khi Insert mới)
 	public User(String email, String userName, String fullName, String passWord, String avatar, int roleid,
 			String phone, Date createdDate, boolean status, String code) {
 		this.email = email;
@@ -44,7 +42,6 @@ public class User implements Serializable {
 		this.code = code;
 	}
 
-	// 3. Constructor 8 tham số cũ (để tương thích nếu code cũ của bạn có gọi)
 	public User(String email, String userName, String fullName, String passWord, String avatar, int roleid,
 			String phone, Date createdDate) {
 		this.email = email;
@@ -58,7 +55,6 @@ public class User implements Serializable {
 		this.status = false;
 	}
 
-	// 4. Constructor đầy đủ tất cả thuộc tính gồm cả ID
 	public User(int id, String email, String userName, String fullName, String passWord, String avatar, int roleid,
 			String phone, Date createdDate, boolean status, String code) {
 		this.id = id;
@@ -74,7 +70,6 @@ public class User implements Serializable {
 		this.code = code;
 	}
 
-	// Getter & Setter
 	public int getId() {
 		return id;
 	}

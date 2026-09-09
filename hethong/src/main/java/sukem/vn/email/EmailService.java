@@ -29,7 +29,6 @@ public class EmailService {
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
 
-		// Sử dụng đầy đủ tên package jakarta.mail để tránh trùng lặp
 		Session session = Session.getInstance(props, new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {

@@ -73,7 +73,6 @@ public class AdminProductController extends HttpServlet {
 			String description = req.getParameter("description");
 			String categoryIdStr = req.getParameter("categoryId");
 
-			// Server-side validation
 			if (name == null || name.trim().isEmpty() || priceStr == null || priceStr.trim().isEmpty()) {
 				req.setAttribute("alert", "Vui lòng nhập đầy đủ tên và giá bánh!");
 				req.setAttribute("categories", categoryDao.findAll());
@@ -98,7 +97,6 @@ public class AdminProductController extends HttpServlet {
 			product.setDescription(description);
 			product.setCategory(category);
 
-			// Xử lý upload ảnh
 			Part filePart = req.getPart("imageFile");
 			if (filePart == null) {
 				filePart = req.getPart("image");

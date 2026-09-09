@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService {
 		}
 		long millis = System.currentTimeMillis();
 		java.sql.Date date = new java.sql.Date(millis);
-		// Khởi tạo User mới với status mặc định là false (chưa kích hoạt)
 		User user = new User(email, username, fullname, password, null, 5, phone, date);
 		user.setStatus(false);
 		userDao.insert(user);

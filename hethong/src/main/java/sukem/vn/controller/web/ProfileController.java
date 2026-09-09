@@ -19,9 +19,9 @@ import sukem.vn.service.impl.UserServiceImpl;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = "/profile")
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-		maxFileSize = 1024 * 1024 * 10, // 10MB
-		maxRequestSize = 1024 * 1024 * 50 // 50MB
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, 
+		maxFileSize = 1024 * 1024 * 10, 
+		maxRequestSize = 1024 * 1024 * 50 
 )
 public class ProfileController extends HttpServlet {
 
@@ -53,7 +53,6 @@ public class ProfileController extends HttpServlet {
 		String fullname = req.getParameter("fullName");
 		String phone = req.getParameter("phone");
 
-		// --- SERVER-SIDE VALIDATION ---
 		if (fullname == null || fullname.trim().isEmpty()) {
 			req.setAttribute("alert", "Họ và tên không được để trống!");
 			req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
@@ -69,13 +68,11 @@ public class ProfileController extends HttpServlet {
 		user.setFullName(fullname.trim());
 		user.setPhone(phone.trim());
 
-		// --- XỬ LÝ UPLOAD ẢNH AVATAR ---
 		try {
 			Part part = req.getPart("image");
 			if (part != null && part.getSize() > 0) {
 				String filename = Paths.get(part.getSubmittedFileName()).getFileName().toString();
 
-				// Validation định dạng file
 				String lowerName = filename.toLowerCase();
 				if (!lowerName.endsWith(".jpg") && !lowerName.endsWith(".jpeg") && !lowerName.endsWith(".png")
 						&& !lowerName.endsWith(".gif") && !lowerName.endsWith(".webp")) {
@@ -84,32 +81,26 @@ public class ProfileController extends HttpServlet {
 					return;
 				}
 
-				// Đổi tên file theo timestamp
 				String ext = filename.substring(filename.lastIndexOf("."));
 				String avatarFileName = System.currentTimeMillis() + ext;
 
-				// LƯU CỐ ĐỊNH TẠI Constant.UPLOAD_DIRECTORY (Ví dụ: C:/upload)
 				File uploadDir = new File(Constant.UPLOAD_DIR);
 				if (!uploadDir.exists()) {
 					uploadDir.mkdirs();
 				}
 
-				// Ghi file vật lý vào thư mục dùng chung với ImageController
 				part.write(Constant.UPLOAD_DIR + File.separator + avatarFileName);
 
-				// Gán tên file vào User
 				user.setAvatar(avatarFileName);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		// Cập nhật CSDL
 		UserService service = new UserServiceImpl();
 		boolean isSuccess = service.update(user);
 
 		if (isSuccess) {
-			// Cập nhật lại session ngay lập tức
 			session.setAttribute("account", user);
 			req.setAttribute("message", "Cập nhật thông tin thành công!");
 		} else {

@@ -15,7 +15,6 @@ public class Constant {
         
     
     }
-        // Cấu hình email hệ thống dùng để gửi thư cho khách
         public static final String HOST_EMAIL = "sushiyamada05@gmail.com";
         public static final String HOST_PASSWORD = "qcaoswtgznzegbss";
 }

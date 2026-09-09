@@ -37,7 +37,6 @@ public class ResetPasswordController extends HttpServlet {
 			return;
 		}
 
-		// Kiểm tra mật khẩu xác nhận
 		if (!newPassword.equals(confirmPassword)) {
 			req.setAttribute("alert", "Mật khẩu xác nhận không trùng khớp!");
 			req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
@@ -46,10 +45,9 @@ public class ResetPasswordController extends HttpServlet {
 
 		User user = userService.findByEmail(email);
 
-		// Kiểm tra OTP
 		if (user != null && inputOtp != null && inputOtp.trim().equals(user.getCode())) {
 			user.setPassWord(newPassword);
-			user.setCode(null); // Xóa OTP
+			user.setCode(null); 
 			userService.update(user);
 
 			session.removeAttribute("resetEmail");

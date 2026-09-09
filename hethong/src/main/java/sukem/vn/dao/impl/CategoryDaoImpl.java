@@ -119,7 +119,6 @@ public class CategoryDaoImpl implements CategoryDao {
 	public List<Category> findAll() {
 		EntityManager em = JpaConfig.getEntityManager();
 		try {
-			// Lấy toàn bộ danh mục từ bảng categories
 			String jpql = "SELECT c FROM Category c";
 			TypedQuery<Category> query = em.createQuery(jpql, Category.class);
 			return query.getResultList();

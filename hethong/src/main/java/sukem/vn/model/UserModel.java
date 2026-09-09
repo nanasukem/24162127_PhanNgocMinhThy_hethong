@@ -37,8 +37,4 @@ public class UserModel {
 		return "UserModel [id=" + id + ", username=" + username + ", password=" + password + "]";
 	}
 	
-	
-	
-	
-
 }

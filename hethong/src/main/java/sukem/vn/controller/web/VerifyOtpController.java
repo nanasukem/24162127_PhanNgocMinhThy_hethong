@@ -35,7 +35,6 @@ public class VerifyOtpController extends HttpServlet {
 		System.out.println("1. Email lay tu Session: " + email);
 		System.out.println("2. OTP form gui len: [" + otpInput + "]");
 
-		// Kiem tra session email
 		if (email == null) {
 			System.out.println("=> LOI: Session 'verifyEmail' bi null!");
 			resp.sendRedirect(req.getContextPath() + "/register");
@@ -49,13 +48,12 @@ public class VerifyOtpController extends HttpServlet {
 			System.out.println("4. OTP trong DB: [" + user.getCode() + "]");
 		}
 
-		// So sanh OTP co trim() ca 2 dau
 		if (user != null && otpInput != null && user.getCode() != null
 				&& otpInput.trim().equals(user.getCode().trim())) {
 
 			System.out.println("=> KET QUA: Khop OTP thanh cong!");
-			user.setStatus(true); // Kich hoat tai khoan
-			user.setCode(null); // Xoa OTP
+			user.setStatus(true); 
+			user.setCode(null); 
 			userService.update(user);
 
 			session.removeAttribute("verifyEmail");

@@ -30,12 +30,10 @@ public class ResendOtpController extends HttpServlet {
 
 		User user = userService.findByEmail(email);
 		if (user != null) {
-			// Sinh mã OTP mới
 			String newOtp = EmailService.generateOtp();
 			user.setCode(newOtp);
 			userService.update(user);
 
-			// Gửi lại email
 			String content = "<h3>Yêu cầu gửi lại mã kích hoạt</h3>"
 					+ "<p>Mã OTP kích hoạt mới của bạn là: <b style='color:#0099dd; font-size:22px;'>" + newOtp
 					+ "</b></p>";

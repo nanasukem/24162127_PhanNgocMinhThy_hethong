@@ -20,29 +20,23 @@ public class ImageController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String fileName = req.getParameter("fname");
 
-		// Nếu không truyền tên file hoặc rỗng -> trả về ảnh icon mặc định
 		if (fileName == null || fileName.trim().isEmpty()) {
 			resp.sendRedirect("https://cdn-icons-png.flaticon.com/512/149/149071.png");
 			return;
 		}
 
-		// Nếu chuỗi là link online (http:// hoặc https://) -> chuyển hướng trực tiếp
 		if (fileName.startsWith("http://") || fileName.startsWith("https://")) {
 			resp.sendRedirect(fileName);
 			return;
 		}
 
-		// Kiểm tra file trên ổ cứng (Constant.UPLOAD_DIRECTORY hoặc
-		// Constant.UPLOAD_DIR)
 		File file = new File(Constant.UPLOAD_DIR, fileName);
 
-		// Nếu file không tồn tại trong thư mục lưu trữ -> trả về ảnh icon mặc định
 		if (!file.exists()) {
 			resp.sendRedirect("https://cdn-icons-png.flaticon.com/512/149/149071.png");
 			return;
 		}
 
-		// Xác định định dạng ảnh và phản hồi luồng byte
 		String mimeType = getServletContext().getMimeType(file.getName());
 		if (mimeType == null) {
 			mimeType = "image/jpeg";

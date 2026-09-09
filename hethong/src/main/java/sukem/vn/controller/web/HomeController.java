@@ -22,19 +22,15 @@ public class HomeController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// 1. Kiểm tra session xem có tài khoản Admin đang đăng nhập không
 		HttpSession session = req.getSession(false);
 		if (session != null && session.getAttribute("account") != null) {
 			User account = (User) session.getAttribute("account");
-			// Nếu là Admin (roleid == 1), tự động nhảy vào trang quản trị Admin
 			if (account.getRoleid() == 1) {
 				resp.sendRedirect(req.getContextPath() + "/admin/products");
-				return; // Dừng lại, không chạy code hiển thị trang khách bên dưới
+				return; 
 			}
 		}
 
-		// 2. Nếu chưa đăng nhập hoặc là khách bình thường, nạp 10 bánh mới nhất và hiển
-		// thị trang chủ
 		List<Product> top10 = productDao.getTop10Recent();
 		req.setAttribute("top10Products", top10);
 

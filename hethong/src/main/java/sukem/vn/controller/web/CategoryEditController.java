@@ -20,9 +20,9 @@ import sukem.vn.service.impl.CategoryServiceImpl;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = { "/admin/category/edit" })
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-		maxFileSize = 1024 * 1024 * 10, // 10MB
-		maxRequestSize = 1024 * 1024 * 50 // 50MB
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, 
+		maxFileSize = 1024 * 1024 * 10, 
+		maxRequestSize = 1024 * 1024 * 50 
 )
 public class CategoryEditController extends HttpServlet {
 
@@ -47,31 +47,26 @@ public class CategoryEditController extends HttpServlet {
 		resp.setCharacterEncoding("UTF-8");
 
 		try {
-			// 1. Nhận dữ liệu ID từ form
 			String idStr = req.getParameter("categoryid");
 			if (idStr == null || idStr.trim().isEmpty()) {
 				idStr = req.getParameter("cateid");
 			}
 			int id = Integer.parseInt(idStr);
 
-			// 2. Nhận tên danh mục
 			String categoryName = req.getParameter("categoryname");
 			if (categoryName == null || categoryName.trim().isEmpty()) {
 				categoryName = req.getParameter("catename");
 			}
 
-			// 3. Lấy đối tượng cũ từ CSDL dùng đúng kiểu sukem.vn.entity.Category
 			Category category = cateService.get(id);
 			if (category != null) {
 				category.setCategoryname(categoryName);
 
-				// 4. Nhận file ảnh qua Jakarta Part
 				Part part = req.getPart("images");
 				if (part == null) {
 					part = req.getPart("icon");
 				}
 
-				// Nếu người dùng chọn tải ảnh mới lên
 				if (part != null && part.getSize() > 0) {
 					String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
 
@@ -80,7 +75,6 @@ public class CategoryEditController extends HttpServlet {
 						String ext = (index > 0) ? originalFileName.substring(index) : ".png";
 						String newFileName = System.currentTimeMillis() + ext;
 
-						// Lưu vào thư mục C:/upload/category
 						File uploadFolder = new File(Constant.UPLOAD_DIR + File.separator + "category");
 						if (!uploadFolder.exists()) {
 							uploadFolder.mkdirs();
@@ -89,16 +83,13 @@ public class CategoryEditController extends HttpServlet {
 						File fileSave = new File(uploadFolder, newFileName);
 						part.write(fileSave.getAbsolutePath());
 
-						// Gán đường dẫn ảnh mới
 						category.setImages("category/" + newFileName);
 					}
 				}
-				// Nếu không chọn ảnh mới thì giữ nguyên ảnh cũ
 
 				cateService.edit(category);
 			}
 
-			// Sửa dòng redirect cuối cùng:
 			resp.sendRedirect(req.getContextPath() + "/admin/products");
 
 		} catch (Exception e) {

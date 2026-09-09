@@ -10,6 +10,5 @@ public class SiteMeshFilter extends ConfigurableSiteMeshFilter {
 
 	@Override
 	protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
-		// Tự động đọc file sitemesh3.xml trong WEB-INF
 	}
 }

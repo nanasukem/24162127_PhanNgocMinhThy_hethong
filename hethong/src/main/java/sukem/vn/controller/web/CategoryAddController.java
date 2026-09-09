@@ -20,9 +20,9 @@ import sukem.vn.service.impl.CategoryServiceImpl;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = { "/admin/category/add" })
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-		maxFileSize = 1024 * 1024 * 10, // 10MB
-		maxRequestSize = 1024 * 1024 * 50 // 50MB
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, 
+		maxFileSize = 1024 * 1024 * 10, 
+		maxRequestSize = 1024 * 1024 * 50 
 )
 public class CategoryAddController extends HttpServlet {
 
@@ -40,7 +40,6 @@ public class CategoryAddController extends HttpServlet {
 		resp.setCharacterEncoding("UTF-8");
 
 		try {
-			// 1. Lấy và kiểm tra tên danh mục (Validation)
 			String cateName = req.getParameter("categoryname");
 			if (cateName == null || cateName.trim().isEmpty()) {
 				cateName = req.getParameter("catename");
@@ -56,7 +55,6 @@ public class CategoryAddController extends HttpServlet {
 			category.setCategoryname(cateName.trim());
 			category.setStatus(1); // 1 là hoạt động
 
-			// 2. Lấy file ảnh upload qua Jakarta Part
 			Part part = req.getPart("images");
 			if (part == null) {
 				part = req.getPart("icon");

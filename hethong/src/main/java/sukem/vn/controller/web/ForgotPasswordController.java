@@ -35,18 +35,15 @@ public class ForgotPasswordController extends HttpServlet {
 			return;
 		}
 
-		// Sinh OTP mới
 		String otp = EmailService.generateOtp();
 		user.setCode(otp);
 		userService.update(user);
 
-		// Gửi thư OTP
 		String emailContent = "<h3>Yêu cầu lấy lại mật khẩu</h3>" + "<p>Mã xác thực OTP để đổi mật khẩu của bạn là:</p>"
 				+ "<h2 style='color: #dc3545; letter-spacing: 3px;'>" + otp + "</h2>"
 				+ "<p>Tuyệt đối không chia sẻ mã này cho bất kỳ ai.</p>";
 		EmailService.sendEmail(email, "Mã OTP đặt lại mật khẩu", emailContent);
 
-		// Ghi nhận email vào session và chuyển sang trang đổi pass
 		req.getSession().setAttribute("resetEmail", email);
 		resp.sendRedirect(req.getContextPath() + "/reset-password");
 	}

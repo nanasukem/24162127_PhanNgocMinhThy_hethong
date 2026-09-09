@@ -20,19 +20,17 @@ public class LogoutController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		// 1. Xóa Session
 		HttpSession session = req.getSession(false);
 		if (session != null) {
 			session.removeAttribute("account");
-			session.invalidate(); // Hủy session để giải phóng bộ nhớ
+			session.invalidate(); 
 		}
 
-		// 2. BỔ SUNG: Xóa Cookie Remember Me (để không bị auto-login lại)
 		Cookie[] cookies = req.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (Constant.COOKIE_REMEMBER.equals(cookie.getName())) {
-					cookie.setMaxAge(0); // Đặt thời gian sống = 0 để xóa cookie khỏi browser
+					cookie.setMaxAge(0); 
 					cookie.setPath("/");
 					resp.addCookie(cookie);
 					break;
@@ -40,7 +38,6 @@ public class LogoutController extends HttpServlet {
 			}
 		}
 
-		// 3. Chuyển hướng về trang đăng nhập
 		resp.sendRedirect(req.getContextPath() + "/login");
 	}
 }
